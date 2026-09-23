@@ -1,0 +1,44 @@
+/* Custom Styles for Challenge!! - Sport Clubz */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* Scrollbar customization */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Tab buttons styling */
+.nav-btn.active {
+  background-color: rgb(30 41 59);
+  color: #ffffff;
+  border-bottom: 2px solid #f97316;
+}
+
+.nav-btn {
+  color: rgb(148 163 184);
+}
+.nav-btn:hover {
+  color: #ffffff;
+  background-color: rgba(51, 65, 85, 0.5);
+}
+
+/* Custom Marker CSS */
+.custom-map-marker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+  transition: transform 0.2s;
+  cursor: pointer;
+}
+.custom-map-marker:hover {
+  transform: scale(1.18);
+}

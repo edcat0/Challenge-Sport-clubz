@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+    <!-- PWA & Mobile Meta Tags (Android & Apple iOS) -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0f172a">
+  <!-- Apple iOS Web App Support -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Sport Clubz">
+  <link rel="apple-touch-icon" href="icons/icon.svg">
+  <!-- Viewport Touch & Notch Optimization -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+
+  <title>Challenge - Sports clubz</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Leaflet CSS & JS for Interactive Map -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="styles.css">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0f9ff',
+              100: '#e0f2fe',
+              500: '#0284c7',
+              600: '#0369a1',
+              700: '#075985',
+              accent: '#f97316'
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col font-sans antialiased">
+
+  <!-- TOP HEADER & BRANDING BAR (Rule 21: 'Challenge - Sports clubz') -->
+  <header class="bg-slate-800/95 backdrop-blur border-b border-slate-700 sticky top-0 z-50 px-4 py-3 shadow-lg">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('discover')">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-500 to-orange-500 flex items-center justify-center text-white shadow-md shadow-orange-500/20">
+          <i class="fa-solid fa-trophy text-lg"></i>
+        </div>
+        <div>
+          <h1 class="font-bold text-lg leading-tight tracking-tight text-white flex items-center gap-2">
+            Challenge - Sports clubz
+            <span class="text-[11px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-full font-semibold">v1.2 Release</span>
+          </h1>
+          <p class="text-xs text-slate-400" data-i18n="tagline">Sport community app for all sports for everyone</p>
+        </div>
+      </div>
+
+      <!-- Quick AI Matching Top Bar (Rule 14) -->
+      <div class="hidden xl:flex items-center gap-2 bg-slate-900/80 border border-slate-700/80 px-3 py-1.5 rounded-xl">
+        <span class="text-xs font-semibold text-orange-400 flex items-center gap-1">
+          <i class="fa-solid fa-wand-magic-sparkles"></i> AI Match:
+        </span>
+        <button onclick="triggerAIMatch('partner')" class="text-xs px-2.5 py-1 bg-slate-800 hover:bg-slate-700 rounded-lg text-slate-200 transition" data-i18n="ai_random_partner">
+          <i class="fa-solid fa-user-group text-sky-400 mr-1"></i> Partner
+        </button>
+        <button onclick="triggerAIMatch('sport')" class="text-xs px-2.5 py-1 bg-slate-800 hover:bg-slate-700 rounded-lg text-slate-200 transition" data-i18n="ai_random_sport">
+          <i class="fa-solid fa-person-running text-emerald-400 mr-1"></i> Sport
+        </button>
+        <button onclick="triggerAIMatch('travel_club')" class="text-xs px-2.5 py-1 bg-slate-800 hover:bg-slate-700 rounded-lg text-slate-200 transition" data-i18n="ai_travel_club">
+          <i class="fa-solid fa-plane-departure text-purple-400 mr-1"></i> Travel Club
+        </button>
+      </div>
+
+      <!-- Language Selector & Controls (Eng/한국어/Jpn/Chn simpl/Chn Tradi/Fra/Ger) -->
+      <div class="flex items-center space-x-2.5">
+        <div class="flex items-center bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1">
+          <i class="fa-solid fa-globe text-slate-400 text-xs mr-2"></i>
+          <select id="langSelect" onchange="changeLanguage(this.value)" class="bg-transparent text-xs text-slate-200 focus:outline-none cursor-pointer">
+            <option value="ko">한국어 (Korean)</option>
+            <option value="en" selected>English</option>
+            <option value="ja">日本語 (Japanese)</option>
+            <option value="zh-CN">简体中文 (Chn Simpl)</option>
+            <option value="zh-TW">繁體中文 (Chn Tradi)</option>
+            <option value="fr">Français (French)</option>
+            <option value="de">Deutsch (German)</option>
+          </select>
+        </div>
+
+        <button onclick="openSecurityModal()" title="Security Policy" class="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-700/60 transition">
+          <i class="fa-solid fa-shield-halved text-sm"></i>
+        </button>
+
+        <button onclick="openShareModal()" title="Publish & Share with Project Group" class="p-2 text-orange-400 hover:text-orange-300 rounded-lg hover:bg-slate-700/60 transition">
+          <i class="fa-solid fa-share-nodes text-sm"></i>
+        </button>
+
+        <div class="flex items-center space-x-2 pl-2 border-l border-slate-700" onclick="switchTab('profile')">
+          <div class="w-8 h-8 rounded-full bg-gradient-to-br from-sky-500 to-indigo-600 flex items-center justify-center font-bold text-xs text-white shadow cursor-pointer">
+            EC
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- REQUIREMENT 18: USER SELECTED SPORTS CATEGORIES ON TOP & ALL SPORT CATEGORIES BAR -->
+    <div class="max-w-7xl mx-auto mt-2 pt-2 border-t border-slate-700/70 flex flex-wrap items-center justify-between gap-2">
+      <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5">
+        <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1 whitespace-nowrap">
+          <i class="fa-solid fa-star text-amber-400"></i> <span data-i18n="top_my_sports">My Sports:</span>
+        </span>
+        <div id="userSelectedSportsChips" class="flex items-center gap-1.5">
+          <!-- Populated by JavaScript -->
+        </div>
+        <button onclick="openSportCategoryModal()" class="text-[11px] bg-slate-700/80 hover:bg-slate-700 text-sky-300 px-2 py-0.5 rounded-full flex items-center gap-1 transition whitespace-nowrap">
+          <i class="fa-solid fa-plus text-[9px]"></i> <span data-i18n="btn_manage_sports">All Sports (전체 종목)</span>
+        </button>
+      </div>
+
+      <!-- Quick Session Calendar Alert (Requirement 19) -->
+      <div class="hidden sm:flex items-center gap-2 text-xs text-slate-300 cursor-pointer hover:text-white" onclick="switchTab('calendar')">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span class="text-slate-400" data-i18n="nearest_session_alert">Nearest Session:</span>
+        <span class="text-emerald-400 font-semibold">The Climb Boulders (Wed 19:30)</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Navigation Tabs -->
+  <nav class="bg-slate-800 border-b border-slate-700/80 px-4 py-2 sticky top-[108px] z-40">
+    <div class="max-w-7xl mx-auto flex items-center justify-between overflow-x-auto no-scrollbar gap-2">
+      <div class="flex space-x-1 sm:space-x-2">
+        <button onclick="switchTab('discover')" id="nav-discover" class="nav-btn active px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition flex items-center gap-1.5">
+          <i class="fa-solid fa-map-location-dot text-sky-400"></i> <span data-i18n="nav_discover">Discover & Live Map</span>
+        </button>
+        <button onclick="switchTab('calendar')" id="nav-calendar" class="nav-btn px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition flex items-center gap-1.5">
+          <i class="fa-solid fa-calendar-days text-emerald-400"></i> <span data-i18n="nav_calendar">Club Sessions & Calendar</span>
+        </button>
+        <button onclick="switchTab('challenges')" id="nav-challenges" class="nav-btn px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition flex items-center gap-1.5">
+          <i class="fa-solid fa-bolt text-amber-400"></i> <span data-i18n="nav_challenge">Challenge System</span>
+        </button>
+        <button onclick="switchTab('rankings')" id="nav-rankings" class="nav-btn px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition flex items-center gap-1.5">
+          <i class="fa-solid fa-ranking-star text-yellow-400"></i> <span data-i18n="nav_rankings">Rankings</span>
+        </button>
+        <button onclick="switchTab('clubs')" id="nav-clubs" class="nav-btn px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition flex items-center gap-1.5">
+          <i class="fa-solid fa-shield-heart text-indigo-400"></i> <span data-i18n="nav_clubs">Clubs & Teams</span>
+        </button>
+        <button onclick="switchTab('payments')" id="nav-payments" class="nav-btn px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition flex items-center gap-1.5">
+          <i class="fa-solid fa-credit-card text-purple-400"></i> <span data-i18n="nav_payments">Payments</span>
+        </button>
+        <button onclick="switchTab('profile')" id="nav-profile" class="nav-btn px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition flex items-center gap-1.5">
+          <i class="fa-solid fa-id-card text-cyan-400"></i> <span data-i18n="nav_profile">Profile & Security</span>
+        </button>
+      </div>
+
+      <!-- Quick Action Challenge CTA -->
+      <button onclick="openNewChallengeModal()" class="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold text-xs px-3.5 py-1.5 rounded-lg shadow-md shadow-orange-500/20 flex items-center gap-1.5 whitespace-nowrap">
+        <i class="fa-solid fa-fire"></i> <span data-i18n="cta_challenge">Create Challenge</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Main Content Area -->
+  <main class="max-w-7xl mx-auto p-4 sm:p-6 flex-1 w-full space-y-6">
+
+    <!-- TAB 1: DISCOVER & LIVE MAP + REQUIREMENT 20 CHAT SYSTEM -->
+    <section id="tab-discover" class="tab-panel space-y-4">
+      <!-- Live Map Controls Banner -->
+      <div class="bg-slate-800 rounded-2xl border border-slate-700 p-4 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h2 class="text-lg font-bold text-white flex items-center gap-2">
+            <i class="fa-solid fa-map-pin text-rose-500"></i>
+            <span data-i18n="map_title">Real-Time Discover & Location Preview</span>
+          </h2>
+          <p class="text-xs text-slate-400" data-i18n="map_subtitle">
+            Find registered sports clubs, nearby players open for immediate match, and tournaments.
+          </p>
+        </div>
+
+        <!-- Filter toggles -->
+        <div class="flex flex-wrap items-center gap-2">
+          <div class="flex items-center space-x-2 bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-700 text-xs">
+            <label class="flex items-center gap-1.5 cursor-pointer">
+              <input type="checkbox" id="filterClubs" checked onchange="updateMapMarkers()" class="rounded text-brand-500 focus:ring-0">
+              <span class="text-emerald-400 font-medium" data-i18n="filter_clubs">Clubs</span>
+            </label>
+            <span class="text-slate-600">|</span>
+            <label class="flex items-center gap-1.5 cursor-pointer">
+              <input type="checkbox" id="filterPartners" checked onchange="updateMapMarkers()" class="rounded text-brand-500 focus:ring-0">
+              <span class="text-sky-400 font-medium" data-i18n="filter_partners">Partners (Live)</span>
+            </label>
+            <span class="text-slate-600">|</span>
+            <label class="flex items-center gap-1.5 cursor-pointer">
+              <input type="checkbox" id="filterMatches" checked onchange="updateMapMarkers()" class="rounded text-brand-500 focus:ring-0">
+              <span class="text-amber-400 font-medium" data-i18n="filter_tournaments">Competitions</span>
+            </label>
+          </div>
+
+          <!-- Sport Category Quick Filter -->
+          <select id="mapSportFilter" onchange="updateMapMarkers()" class="bg-slate-900 border border-slate-700 text-slate-200 text-xs rounded-xl px-3 py-2">
+            <option value="all" data-i18n="all_sports">All Sports (전체 종목)</option>
+            <option value="프리다이빙">Freediving (프리다이빙)</option>
+            <option value="클라이밍">Climbing (클라이밍)</option>
+            <option value="배드민턴">Badminton (배드민턴)</option>
+            <option value="테니스">Tennis (테니스)</option>
+            <option value="수중하키">Underwater Hockey (수중하키)</option>
+            <option value="축구">Football / Futsal (축구/풋살)</option>
+            <option value="탁구">Table Tennis (탁구)</option>
+            <option value="수영">Swimming (수영)</option>
+            <option value="볼더링">Bouldering (볼더링)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Map & Details Container -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <!-- Interactive Map Canvas -->
+        <div class="lg:col-span-2 bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden shadow-2xl relative min-h-[440px]">
+          <div id="liveMap" class="w-full h-full min-h-[440px]"></div>
+          <!-- Real-time Location Broadcast Status Tag -->
+          <div class="absolute bottom-4 left-4 z-[500] bg-slate-900/90 backdrop-blur border border-slate-700 px-3 py-1.5 rounded-xl shadow-lg flex items-center gap-2 text-xs">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+            <span class="text-slate-300" data-i18n="map_broadcast_status">Your GPS Broadcast: <strong>Active (Consented)</strong></span>
+          </div>
+        </div>
+
+        <!-- Live Selection / Details Panel -->
+        <div class="bg-slate-800 rounded-2xl border border-slate-700 p-4 flex flex-col justify-between shadow-xl space-y-4">
+          <div>
+            <div class="flex items-center justify-between pb-3 border-b border-slate-700">
+              <h3 class="font-bold text-white text-sm flex items-center gap-2">
+                <i class="fa-solid fa-circle-info text-sky-400"></i>
+                <span data-i18n="selected_location_info">Selected Details</span>
+              </h3>
+              <span id="selectedBadge" class="text-[11px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-full">Club</span>
+            </div>
+            
+            <div id="selectedDetailContent" class="py-3 space-y-3">
+              <div class="text-center py-8 text-slate-400 text-xs">
+                <i class="fa-solid fa-hand-pointer text-2xl text-slate-500 mb-2 block"></i>
+                <span data-i18n="click_marker_prompt">Click any pin on the map or club in the list to view live details and participate.</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Action Buttons in Details Panel -->
+          <div id="selectedActions" class="hidden pt-3 border-t border-slate-700 space-y-2">
+            <button id="btnPingPartner" onclick="pingSelectedPartner()" class="w-full bg-sky-600 hover:bg-sky-500 text-white font-semibold py-2 px-4 rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg transition">
+              <i class="fa-solid fa-bolt"></i> <span data-i18n="btn_ping_partner">Ping Partner for Match (채팅 요청)</span>
+            </button>
+            <button id="btnParticipateClub" onclick="participateSelectedClub()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-2 px-4 rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg transition">
+              <i class="fa-solid fa-user-plus"></i> <span data-i18n="btn_participate_club">Participate / Join Session</span>
+            </button>
+            <button id="btnChallengeDirect" onclick="challengeDirectFromMap()" class="w-full bg-orange-600 hover:bg-orange-500 text-white font-semibold py-2 px-4 rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg transition">
+              <i class="fa-solid fa-fire"></i> <span data-i18n="btn_challenge_now">Send Official Challenge</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- REQUIREMENT 20: DISCOVER CHAT TABLE, PARTNER PING, GROUP CHAT & CLUB CHATROOMS -->
+      <div class="bg-slate-800 rounded-2xl border border-slate-700 p-4 shadow-xl space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-700">
+          <div>
+            <h3 class="font-bold text-white text-sm sm:text-base flex items-center gap-2">
+              <i class="fa-solid fa-comments text-sky-400"></i>
+              <span data-i18n="discover_chat_title">Discover Chat & Interactive Partner Pings</span>
+            </h3>
+            <p class="text-xs text-slate-400" data-i18n="discover_chat_desc">
+              Selected partners queue, partner ping acceptance gating, group chat creation, and club chatrooms.
+            </p>
+          </div>
+
+          <!-- Channel / View Switcher (Selected Partners vs Club Chatroom) -->
+          <div class="flex items-center gap-2">
+            <div class="bg-slate-900 p-1 rounded-xl border border-slate-700 flex text-xs">
+              <button onclick="switchChatChannel('partners')" id="chat-tab-partners" class="px-3 py-1 rounded-lg bg-brand-600 text-white font-medium transition" data-i18n="tab_partner_chat">
+                <i class="fa-solid fa-user-group mr-1"></i> Partner Pings
+              </button>
+              <button onclick="switchChatChannel('clubrooms')" id="chat-tab-clubrooms" class="px-3 py-1 rounded-lg text-slate-400 hover:text-white transition" data-i18n="tab_clubrooms">
+                <i class="fa-solid fa-shield-halved mr-1"></i> Club Chatrooms
+              </button>
+            </div>
+
+            <button onclick="openInviteModal()" class="bg-slate-700 hover:bg-slate-600 text-sky-300 text-xs px-3 py-1.5 rounded-xl border border-slate-600 transition flex items-center gap-1">
+              <i class="fa-solid fa-user-plus"></i> <span data-i18n="btn_invite_member">Invite Member</span>
+            </button>
+            <button onclick="initiateSelectedGroupChat()" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs px-3 py-1.5 rounded-xl transition flex items-center gap-1">
+              <i class="fa-solid fa-users-line"></i> <span data-i18n="btn_group_chat">Start Group Chat</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Chat Workspace Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+          <!-- Left: Small Chat Table for Selected Partners (Rule 20) -->
+          <div class="lg:col-span-5 bg-slate-900/80 rounded-xl border border-slate-700 p-3 space-y-3">
+            <div class="flex items-center justify-between text-xs font-semibold text-slate-300">
+              <span class="flex items-center gap-1.5">
+                <i class="fa-solid fa-table-list text-amber-400"></i> Selected Partners from Search
+              </span>
+              <span id="selectedPartnersCount" class="text-[11px] bg-slate-800 text-sky-400 px-2 py-0.5 rounded-full border border-slate-700">4 Partners</span>
+            </div>
+
+            <!-- Table of selected partners -->
+            <div class="overflow-x-auto max-h-60 overflow-y-auto">
+              <table class="w-full text-left text-xs">
+                <thead class="text-slate-400 text-[10px] uppercase border-b border-slate-700">
+                  <tr>
+                    <th class="py-1.5 px-2">Sel</th>
+                    <th class="py-1.5 px-2">Partner</th>
+                    <th class="py-1.5 px-2">Sport</th>
+                    <th class="py-1.5 px-2">Ping Status</th>
+                    <th class="py-1.5 px-2 text-right">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="partnersChatTableBody" class="divide-y divide-slate-800">
+                  <!-- Dynamic partner rows -->
+                </tbody>
+              </table>
+            </div>
+
+            <div class="p-2.5 bg-slate-800/80 rounded-lg border border-slate-700 text-[11px] text-slate-400 space-y-1">
+              <div class="text-sky-300 font-medium flex items-center gap-1">
+                <i class="fa-solid fa-circle-info"></i> Ping Acceptance Gating:
+              </div>
+              <p>Chat is strictly locked until the partner accepts the ping. Click <em>"Simulate Accept"</em> to test real-time chat activation.</p>
+            </div>
+          </div>
+
+          <!-- Right: Active Chat Conversation Box -->
+          <div class="lg:col-span-7 bg-slate-900/90 rounded-xl border border-slate-700 flex flex-col justify-between h-[300px]">
+            <!-- Chat Header -->
+            <div class="p-3 border-b border-slate-700/80 flex items-center justify-between bg-slate-800/50 rounded-t-xl">
+              <div class="flex items-center space-x-2.5">
+                <div id="activeChatAvatar" class="w-7 h-7 rounded-lg bg-sky-500 flex items-center justify-center font-bold text-xs text-white">
+                  <i class="fa-solid fa-user"></i>
+                </div>
+                <div>
+                  <h4 id="activeChatTitle" class="font-bold text-xs text-white">Alex V. (Freediver)</h4>
+                  <span id="activeChatStatus" class="text-[10px] text-emerald-400 flex items-center gap-1">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Ping Accepted • Chat Unlocked
+                  </span>
+                </div>
+              </div>
+              <span id="activeChatBadge" class="text-[10px] bg-slate-800 text-slate-300 border border-slate-700 px-2 py-0.5 rounded-full">1:1 Session</span>
+            </div>
+
+            <!-- Messages Log -->
+            <div id="chatMessagesLog" class="p-3 space-y-2 overflow-y-auto flex-1 text-xs">
+              <!-- Dynamically populated messages -->
+            </div>
+
+            <!-- Chat Input (Gated by Acceptance) -->
+            <div class="p-2.5 border-t border-slate-700 bg-slate-800/60 rounded-b-xl">
+              <div id="chatLockedOverlay" class="hidden text-center py-2 text-xs text-amber-400 font-medium flex items-center justify-center gap-2">
+                <i class="fa-solid fa-lock"></i> Chat disabled: Partner must accept ping request first.
+              </div>
+              <form id="chatMessageForm" onsubmit="sendChatMessage(event)" class="flex items-center gap-2">
+                <input type="text" id="chatInputText" placeholder="Type a message or discuss match venue..." class="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-sky-500">
+                <button type="submit" class="bg-brand-500 hover:bg-brand-600 text-white text-xs font-semibold px-3 py-2 rounded-lg transition flex items-center gap-1">
+                  <i class="fa-solid fa-paper-plane"></i>
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: REQUIREMENT 19 CALENDAR & SCHEDULED SESSIONS WITH REQUIRED PAYMENTS -->
+    <section id="tab-calendar" class="tab-panel hidden space-y-6">
+      <div class="bg-slate-800 rounded-2xl border border-slate-700 p-5 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <div class="inline-flex items-center gap-1.5 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2.5 py-0.5 rounded-full text-xs font-semibold mb-2">
+            <i class="fa-solid fa-calendar-check"></i> <span data-i18n="cal_badge">Nearest Clubs Session Schedule</span>
+          </div>
+          <h2 class="text-xl font-bold text-white flex items-center gap-2">
+            <span data-i18n="cal_title">Nearest Club Sessions & Required Payment Details</span>
+          </h2>
+          <p class="text-xs text-slate-400 mt-1" data-i18n="cal_desc">
+            Browse upcoming regular sessions from clubs nearest to your location (Seoul Metro), check required session and court dues, and book instantly.
+          </p>
+        </div>
+
+        <!-- Filter by Sport in Calendar -->
+        <div class="flex items-center gap-2">
+          <label class="text-xs text-slate-400 font-medium" data-i18n="filter_sport_label">Filter Sport:</label>
+          <select id="calSportFilter" onchange="renderCalendarSessions()" class="bg-slate-900 border border-slate-700 text-slate-200 text-xs rounded-xl px-3 py-2">
+            <option value="all">All Nearest Sports</option>
+            <option value="클라이밍">Climbing (클라이밍)</option>
+            <option value="프리다이빙">Freediving (프리다이빙)</option>
+            <option value="수중하키">Underwater Hockey (수중하키)</option>
+            <option value="배드민턴">Badminton (배드민턴)</option>
+            <option value="축구">Football (축구)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Calendar Timeline / Grid View -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="calendarSessionsGrid">
+        <!-- Rendered by JavaScript -->
+      </div>
+    </section>
+
+    <!-- TAB 3: CHALLENGE SYSTEM -->
+    <section id="tab-challenges" class="tab-panel hidden space-y-6">
+      <div class="bg-gradient-to-r from-orange-950/50 via-slate-800 to-slate-800 rounded-2xl border border-orange-500/30 p-5 shadow-xl">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <div class="inline-flex items-center gap-1.5 bg-orange-500/20 text-orange-400 border border-orange-500/30 px-2.5 py-0.5 rounded-full text-xs font-semibold mb-2">
+              <i class="fa-solid fa-fire"></i> Challenge Rule Engine
+            </div>
+            <h2 class="text-xl font-bold text-white flex items-center gap-2">
+              <span data-i18n="challenge_hub_title">Competitive Challenge & Dual Consent Match Record</span>
+            </h2>
+            <p class="text-xs text-slate-400 max-w-3xl mt-1" data-i18n="challenge_rules_desc">
+              Lower rankers can challenge opponents <strong>2 to 3 ranks above</strong> their current level. Only players or clubs in the <strong>same sport category</strong> can match. New players start at Rank 999 and earn revised ranking after mutual verification of match results!
+            </p>
+          </div>
+          <button onclick="openNewChallengeModal()" class="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold text-sm px-5 py-2.5 rounded-xl shadow-lg shadow-orange-500/30 flex items-center gap-2 self-start md:self-auto">
+            <i class="fa-solid fa-swords"></i> <span data-i18n="btn_start_challenge">Issue Challenge</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Challenge Category Switcher: Individual vs Club Challenge -->
+      <div class="flex items-center space-x-3 border-b border-slate-700 pb-3">
+        <button onclick="toggleChallengeMode('individual')" id="btn-mode-individual" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-orange-500 text-white shadow-md transition">
+          <i class="fa-solid fa-user mr-1.5"></i> <span data-i18n="individual_challenge">Individual Challenge (2~3 Ranks Above)</span>
+        </button>
+        <button onclick="toggleChallengeMode('club')" id="btn-mode-club" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition">
+          <i class="fa-solid fa-users mr-1.5"></i> <span data-i18n="club_challenge">Club-to-Club Challenge</span>
+        </button>
+      </div>
+
+      <!-- Individual Challenge Target Table -->
+      <div id="section-individual-challenge" class="space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div class="text-xs text-slate-400">
+            <span data-i18n="my_current_sport">Current Sport:</span>
+            <select id="challengeSportSelect" onchange="renderEligibleOpponents()" class="bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded-lg px-2.5 py-1.5 ml-2">
+              <option value="클라이밍">Climbing (클라이밍)</option>
+              <option value="프리다이빙">Freediving (프리다이빙)</option>
+              <option value="배드민턴">Badminton (배드민턴)</option>
+              <option value="테니스">Tennis (테니스)</option>
+              <option value="수중하키">Underwater Hockey (수중하키)</option>
+            </select>
+            <span class="ml-3 text-sky-400" id="myRankDisplay" data-i18n="my_rank_status">Your Rank: #5 (Eligible Targets: #2, #3)</span>
+          </div>
+        </div>
+
+        <div class="bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden shadow-xl">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-slate-900/80 text-slate-400 uppercase text-[11px] border-b border-slate-700">
+              <tr>
+                <th class="px-4 py-3">Rank</th>
+                <th class="px-4 py-3" data-i18n="col_player">Player / User</th>
+                <th class="px-4 py-3" data-i18n="col_region">Region</th>
+                <th class="px-4 py-3" data-i18n="col_sport">Sport</th>
+                <th class="px-4 py-3" data-i18n="col_record">Win / Matches</th>
+                <th class="px-4 py-3" data-i18n="col_eligibility">Eligibility</th>
+                <th class="px-4 py-3 text-right" data-i18n="col_action">Action</th>
+              </tr>
+            </thead>
+            <tbody id="opponentsTableBody" class="divide-y divide-slate-700">
+              <!-- Dynamically rendered -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Pending Consents & Record Verification System (Mutual Confirmation) -->
+      <div class="bg-slate-800 rounded-2xl border border-slate-700 p-5 shadow-xl space-y-4">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-700">
+          <div>
+            <h3 class="font-bold text-white text-sm flex items-center gap-2">
+              <i class="fa-solid fa-handshake-angle text-emerald-400"></i>
+              <span data-i18n="match_consent_title">Match Result Consent & Verification Queue</span>
+            </h3>
+            <p class="text-xs text-slate-400" data-i18n="match_consent_desc">
+              Both parties must consent to the submitted score for rank calculation and official rating revision.
+            </p>
+          </div>
+          <span class="text-xs bg-amber-500/20 text-amber-400 border border-amber-500/30 px-2.5 py-1 rounded-full font-semibold">
+            2 Pending Approvals
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="pendingConsentsList">
+          <!-- Rendered in app.js -->
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: RANKINGS -->
+    <section id="tab-rankings" class="tab-panel hidden space-y-4">
+      <div class="bg-slate-800 rounded-2xl border border-slate-700 p-4 shadow-xl flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h2 class="text-lg font-bold text-white flex items-center gap-2">
+            <i class="fa-solid fa-ranking-star text-yellow-400"></i>
+            <span data-i18n="ranking_header">Rankings & Leaderboards</span>
+          </h2>
+          <p class="text-xs text-slate-400" data-i18n="ranking_sub">
+            Rankings filtered per sport category and region (City, Regional, National, Global)
+          </p>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2">
+          <select id="rankSportFilter" onchange="renderRankings()" class="bg-slate-900 border border-slate-700 text-slate-200 text-xs rounded-xl px-3 py-2">
+            <option value="전체">All Sports (전체)</option>
+            <option value="프리다이빙">Freediving (프리다이빙)</option>
+            <option value="클라이밍">Climbing (클라이밍)</option>
+            <option value="배드민턴">Badminton (배드민턴)</option>
+            <option value="테니스">Tennis (테니스)</option>
+            <option value="수중하키">Underwater Hockey (수중하키)</option>
+            <option value="축구">Football (축구)</option>
+          </select>
+
+          <select id="rankRegionFilter" onchange="renderRankings()" class="bg-slate-900 border border-slate-700 text-slate-200 text-xs rounded-xl px-3 py-2">
+            <option value="all">Global (전세계)</option>
+            <option value="national" selected>National / 대한민국 (South Korea)</option>
+            <option value="seoul">Regional / 서울특별시 (Seoul)</option>
+            <option value="gangnam">City / 서울 강남구 (Gangnam)</option>
+            <option value="busan">Regional / 부산광역시 (Busan)</option>
+            <option value="jeju">Regional / 제주특별자치도 (Jeju)</option>
+          </select>
+
+          <div class="bg-slate-900 p-1 rounded-xl border border-slate-700 flex text-xs">
+            <button onclick="setRankType('personal')" id="rank-type-personal" class="px-2.5 py-1 rounded-lg bg-brand-600 text-white font-medium transition" data-i18n="rank_personal">Personal</button>
+            <button onclick="setRankType('club')" id="rank-type-club" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition" data-i18n="rank_club">Club</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden shadow-xl">
+        <table class="w-full text-left text-xs">
+          <thead class="bg-slate-900/80 text-slate-400 uppercase text-[11px] border-b border-slate-700">
+            <tr>
+              <th class="px-4 py-3.5">Rank</th>
+              <th class="px-4 py-3.5" data-i18n="col_name">Name / Entity</th>
+              <th class="px-4 py-3.5" data-i18n="col_sport">Sport</th>
+              <th class="px-4 py-3.5" data-i18n="col_region">Region</th>
+              <th class="px-4 py-3.5" data-i18n="col_score">Score (Pts)</th>
+              <th class="px-4 py-3.5" data-i18n="col_tier">Level / Tier</th>
+              <th class="px-4 py-3.5 text-right" data-i18n="col_action">Action</th>
+            </tr>
+          </thead>
+          <tbody id="rankingsTableBody" class="divide-y divide-slate-700">
+            <!-- Dynamic Ranking Rows -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- TAB 5: CLUBS & TEAMS -->
+    <section id="tab-clubs" class="tab-panel hidden space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h2 class="text-lg font-bold text-white flex items-center gap-2">
+            <i class="fa-solid fa-users text-emerald-400"></i>
+            <span data-i18n="clubs_header">Sports Clubs & Teams Directory</span>
+          </h2>
+          <p class="text-xs text-slate-400" data-i18n="clubs_sub">
+            Explore active clubs, join regular sessions, or create your own club.
+          </p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="openCreateClubModal()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs px-3.5 py-2 rounded-xl shadow-lg transition flex items-center gap-1.5">
+            <i class="fa-solid fa-plus"></i> <span data-i18n="btn_register_club">Register New Club</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="clubsGrid">
+        <!-- Rendered dynamically -->
+      </div>
+    </section>
+
+    <!-- TAB 6: PAYMENT SYSTEM -->
+    <section id="tab-payments" class="tab-panel hidden space-y-6">
+      <div class="bg-slate-800 rounded-2xl border border-slate-700 p-5 shadow-xl">
+        <h2 class="text-lg font-bold text-white flex items-center gap-2 mb-1">
+          <i class="fa-solid fa-credit-card text-purple-400"></i>
+          <span data-i18n="payments_title">Unified Sports Payment System</span>
+        </h2>
+        <p class="text-xs text-slate-400" data-i18n="payments_desc">
+          Manage club membership dues, team training fees, and competition / tournament entry payments securely.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-2 space-y-4">
+          <h3 class="text-sm font-bold text-white flex items-center gap-2" data-i18n="payable_items">
+            <i class="fa-solid fa-receipt text-sky-400"></i> Dues & Tournament Entries
+          </h3>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-slate-800 border border-slate-700 rounded-2xl p-4 shadow flex flex-col justify-between">
+              <div>
+                <div class="flex justify-between items-start mb-2">
+                  <span class="text-[11px] bg-sky-500/20 text-sky-400 px-2 py-0.5 rounded-full font-medium">Tournament Entry</span>
+                  <span class="text-xs font-bold text-emerald-400">₩ 35,000 (~$26)</span>
+                </div>
+                <h4 class="font-bold text-sm text-white">2026 Seoul Metro Freediving Cup</h4>
+                <p class="text-xs text-slate-400 mt-1">Olympic Pool Diving Center / STA & DYN Official Heat</p>
+              </div>
+              <button onclick="openPaymentCheckout('2026 Seoul Metro Freediving Cup', 35000, 'Competition')" class="mt-4 w-full bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold py-2 rounded-xl transition flex items-center justify-center gap-2">
+                <i class="fa-solid fa-lock text-xs"></i> <span data-i18n="pay_now">Pay Entry Fee</span>
+              </button>
+            </div>
+
+            <div class="bg-slate-800 border border-slate-700 rounded-2xl p-4 shadow flex flex-col justify-between">
+              <div>
+                <div class="flex justify-between items-start mb-2">
+                  <span class="text-[11px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full font-medium">Club Dues</span>
+                  <span class="text-xs font-bold text-emerald-400">₩ 20,000 (~$15) / mo</span>
+                </div>
+                <h4 class="font-bold text-sm text-white">The Climb Boulders Monthly Dues</h4>
+                <p class="text-xs text-slate-400 mt-1">Weekly session chalk, equipment & guest gym discount passes</p>
+              </div>
+              <button onclick="openPaymentCheckout('The Climb Boulders Monthly Dues', 20000, 'Club Dues')" class="mt-4 w-full bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold py-2 rounded-xl transition flex items-center justify-center gap-2">
+                <i class="fa-solid fa-lock text-xs"></i> <span data-i18n="pay_now">Pay Membership</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="bg-slate-800 rounded-2xl border border-slate-700 p-4 shadow-xl">
+            <h4 class="font-bold text-sm text-white mb-3" data-i18n="transaction_history">Recent Payment Receipts</h4>
+            <div class="overflow-x-auto">
+              <table class="w-full text-xs text-left">
+                <thead class="bg-slate-900/60 text-slate-400 text-[11px]">
+                  <tr>
+                    <th class="px-3 py-2">Date</th>
+                    <th class="px-3 py-2">Item Description</th>
+                    <th class="px-3 py-2">Category</th>
+                    <th class="px-3 py-2">Amount</th>
+                    <th class="px-3 py-2">Status</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-700 text-slate-300">
+                  <tr>
+                    <td class="px-3 py-2">2026-09-15</td>
+                    <td class="px-3 py-2 font-medium text-white">Gangnam Badminton Club Session Fee</td>
+                    <td class="px-3 py-2">Club Dues</td>
+                    <td class="px-3 py-2">₩ 15,000</td>
+                    <td class="px-3 py-2 text-emerald-400 font-semibold">Completed</td>
+                  </tr>
+                  <tr>
+                    <td class="px-3 py-2">2026-08-20</td>
+                    <td class="px-3 py-2 font-medium text-white">National Underwater Hockey Summer Match Entry</td>
+                    <td class="px-3 py-2">Tournament</td>
+                    <td class="px-3 py-2">₩ 30,000</td>
+                    <td class="px-3 py-2 text-emerald-400 font-semibold">Completed</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="space-y-4">
+          <div class="bg-slate-800 rounded-2xl border border-slate-700 p-4 shadow-xl">
+            <h4 class="font-bold text-sm text-white mb-2" data-i18n="supported_gateways">Supported Gateways</h4>
+            <p class="text-xs text-slate-400 mb-4" data-i18n="gateway_desc">Compliant with PCI-DSS, local Korean PG regulations, and international Stripe/PayPal frameworks.</p>
+            <div class="grid grid-cols-2 gap-2 text-center text-xs">
+              <div class="bg-slate-900 border border-slate-700 p-2.5 rounded-xl font-medium text-yellow-400">
+                <i class="fa-solid fa-comment mr-1"></i> KakaoPay
+              </div>
+              <div class="bg-slate-900 border border-slate-700 p-2.5 rounded-xl font-medium text-blue-400">
+                <i class="fa-brands fa-apple mr-1"></i> Apple Pay
+              </div>
+              <div class="bg-slate-900 border border-slate-700 p-2.5 rounded-xl font-medium text-sky-400">
+                <i class="fa-brands fa-google-pay text-lg"></i> Google Pay
+              </div>
+              <div class="bg-slate-900 border border-slate-700 p-2.5 rounded-xl font-medium text-indigo-400">
+                <i class="fa-brands fa-paypal mr-1"></i> PayPal / Cards
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl border border-slate-700 p-4 shadow-xl">
+            <h4 class="font-bold text-sm text-white flex items-center gap-2 mb-2">
+              <i class="fa-solid fa-shield-check text-emerald-400"></i> Escrow Guarantee
+            </h4>
+            <p class="text-xs text-slate-400 leading-relaxed">
+              Tournament and challenge match entry fees are held securely until match verification and dual consent is recorded on system.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 7: PROFILE & INFORMATION SECURITY -->
+    <section id="tab-profile" class="tab-panel hidden space-y-6">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="bg-slate-800 rounded-2xl border border-slate-700 p-5 shadow-xl space-y-4">
+          <div class="flex items-center space-x-4">
+            <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center font-bold text-2xl text-white shadow-lg">
+              EC
+            </div>
+            <div>
+              <h3 class="font-bold text-lg text-white">Edcat</h3>
+              <p class="text-xs text-slate-400">서울 동대문구 (Dongdaemun, Seoul)</p>
+              <span class="inline-block mt-1 text-[11px] bg-orange-500/20 text-orange-400 border border-orange-500/30 px-2 py-0.5 rounded-full font-semibold">
+                Rank #5 • 2 Matches • 20 Pts
+              </span>
+            </div>
+          </div>
+
+          <div class="pt-3 border-t border-slate-700 space-y-2 text-xs">
+            <div class="flex justify-between py-1 border-b border-slate-700/50">
+              <span class="text-slate-400" data-i18n="prof_code">Unique User Code</span>
+              <span class="font-mono text-slate-200">USR-7729-KR</span>
+            </div>
+            <div class="flex justify-between py-1 border-b border-slate-700/50">
+              <span class="text-slate-400" data-i18n="prof_sports">Interested Sports</span>
+              <span class="text-right text-slate-200">수중하키, 수중럭비, 클라이밍, 탁구</span>
+            </div>
+            <div class="flex justify-between py-1 border-b border-slate-700/50">
+              <span class="text-slate-400" data-i18n="prof_phone">Contact Number</span>
+              <span class="text-slate-200">010-XXXX-5521 (Secured)</span>
+            </div>
+            <div class="flex justify-between py-1">
+              <span class="text-slate-400" data-i18n="prof_location_consent">Live Location Sharing</span>
+              <span class="text-emerald-400 font-semibold flex items-center gap-1">
+                <i class="fa-solid fa-circle-check"></i> Exposed (Consent Granted)
+              </span>
+            </div>
+          </div>
+
+          <button onclick="openConsentModal()" class="w-full bg-slate-700 hover:bg-slate-600 text-white font-medium py-2 rounded-xl text-xs transition flex items-center justify-center gap-2">
+            <i class="fa-solid fa-sliders"></i> <span data-i18n="manage_privacy">Manage Consent & Privacy Preferences</span>
+          </button>
+        </div>
+
+        <div class="lg:col-span-2 bg-slate-800 rounded-2xl border border-slate-700 p-5 shadow-xl space-y-4">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-700">
+            <div>
+              <h3 class="font-bold text-white text-base flex items-center gap-2">
+                <i class="fa-solid fa-shield-halved text-brand-500"></i>
+                <span data-i18n="infosec_title">Information Security & Regional Compliance Matrix</span>
+              </h3>
+              <p class="text-xs text-slate-400" data-i18n="infosec_sub">
+                Global standards (GDPR, ISO 27001) and regional policies (Korean PIPA, Japan APPI, etc.) applied per region.
+              </p>
+            </div>
+            <span class="text-xs bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2.5 py-1 rounded-full font-semibold">
+              Status: Verified
+            </span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+            <div class="bg-slate-900/80 p-3.5 rounded-xl border border-slate-700 space-y-2">
+              <div class="font-bold text-sky-400 flex items-center gap-1.5">
+                <i class="fa-solid fa-globe"></i> Global Data Security Policy
+              </div>
+              <p class="text-slate-300 leading-relaxed">
+                All data transmission encrypted via TLS 1.3. User passwords and confidential identifiers hashed with Argon2id. Zero-knowledge location masking option for offline mode.
+              </p>
+            </div>
+
+            <div class="bg-slate-900/80 p-3.5 rounded-xl border border-slate-700 space-y-2">
+              <div class="font-bold text-emerald-400 flex items-center gap-1.5">
+                <i class="fa-solid fa-flag"></i> Local Regional Regulations (Korea / APAC)
+              </div>
+              <p class="text-slate-300 leading-relaxed">
+                Full compliance with South Korea's Personal Information Protection Act (개인정보보호법) & Location Information Act (위치정보법). Strict consent required prior to real-time coordinate exposure.
+              </p>
+            </div>
+
+            <div class="bg-slate-900/80 p-3.5 rounded-xl border border-slate-700 space-y-2">
+              <div class="font-bold text-purple-400 flex items-center gap-1.5">
+                <i class="fa-solid fa-hand-holding-hand"></i> Mandatory User Consent Framework
+              </div>
+              <p class="text-slate-300 leading-relaxed">
+                Every user must explicitly agree to terms, location broadcasting for match finding, and match result certification prior to participating in rankings or club activities.
+              </p>
+            </div>
+
+            <div class="bg-slate-900/80 p-3.5 rounded-xl border border-slate-700 space-y-2">
+              <div class="font-bold text-amber-400 flex items-center gap-1.5">
+                <i class="fa-solid fa-database"></i> Google Drive Sync & Database Architecture
+              </div>
+              <p class="text-slate-300 leading-relaxed">
+                Real-time two-way synchronization between Google Sheets cloud database and application records. All code and updates stored in designated Google Drive folder.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL: ALL SPORT CATEGORIES MANAGEMENT (REQUIREMENT 18) -->
+  <div id="sportCategoriesModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-800 border border-slate-700 rounded-2xl max-w-2xl w-full p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-700">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-sky-500/20 text-sky-400 flex items-center justify-center">
+            <i class="fa-solid fa-layer-group"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-white text-base" data-i18n="modal_all_sports_title">All Sport Categories Directory</h3>
+            <p class="text-xs text-slate-400" data-i18n="modal_all_sports_desc">Select sports to add or toggle in your personal profile top bar.</p>
+          </div>
+        </div>
+        <button onclick="closeModal('sportCategoriesModal')" class="text-slate-400 hover:text-white">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div id="allSportsDirectory" class="space-y-4 text-xs">
+        <!-- Rendered by JS: Grouped by Water, Racket, Mountain/Climbing, Team/Ball, Martial Arts, Fitness -->
+      </div>
+
+      <div class="flex justify-end gap-2 pt-3 border-t border-slate-700">
+        <button onclick="closeModal('sportCategoriesModal')" class="bg-brand-600 hover:bg-brand-500 text-white font-semibold px-4 py-2 rounded-xl text-xs">
+          Save & Apply
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: INVITATION / SHARE OPTIONS (REQUIREMENT 20 & 22) -->
+  <div id="inviteModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-800 border border-slate-700 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-700">
+        <h3 class="font-bold text-white text-base flex items-center gap-2">
+          <i class="fa-solid fa-user-plus text-sky-400"></i>
+          <span data-i18n="invite_modal_title">Member Invitation Options</span>
+        </h3>
+        <button onclick="closeModal('inviteModal')" class="text-slate-400 hover:text-white">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block text-slate-300 font-medium mb-1">Direct User Code / Handle:</label>
+          <div class="flex gap-2">
+            <input type="text" id="inviteUserCodeInput" placeholder="e.g. USR-4412-KR or Player Name" class="flex-1 bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-200">
+            <button onclick="sendDirectInvitation()" class="bg-sky-600 hover:bg-sky-500 text-white font-semibold px-3 py-2 rounded-lg">Invite</button>
+          </div>
+        </div>
+
+        <div class="pt-2">
+          <label class="block text-slate-300 font-medium mb-1">Shareable Session / Group Link:</label>
+          <div class="flex gap-2">
+            <input type="text" readonly value="https://challenge-sports-clubz.app/join?ref=USR-7729" class="flex-1 bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-400 font-mono text-[11px]">
+            <button onclick="copyInviteLink()" class="bg-slate-700 hover:bg-slate-600 text-white font-semibold px-3 py-2 rounded-lg flex items-center gap-1">
+              <i class="fa-solid fa-copy"></i> Copy
+            </button>
+          </div>
+        </div>
+
+        <div class="p-3 bg-slate-900/60 rounded-xl border border-slate-700 text-slate-400 space-y-1">
+          <div class="text-emerald-400 font-semibold flex items-center gap-1">
+            <i class="fa-solid fa-share-nodes"></i> Publish for Project Group:
+          </div>
+          <p>This build is synchronized to the project team Google Drive folder <strong>'App - dev.'</strong> with full source code & standalone runner.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: MANDATORY CONSENT MODAL -->
+  <div id="consentModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-800 border border-slate-700 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-5">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-700">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-orange-500/20 text-orange-400 flex items-center justify-center">
+            <i class="fa-solid fa-shield-check"></i>
+          </div>
+          <h3 class="font-bold text-white text-base" data-i18n="modal_consent_title">Welcome to Challenge - Sports clubz</h3>
+        </div>
+      </div>
+
+      <div class="space-y-4 text-xs text-slate-300">
+        <div class="bg-slate-900 p-3 rounded-xl border border-slate-700">
+          <label class="block font-semibold text-slate-200 mb-1" data-i18n="modal_select_lang">Select Your Language / 언어 선택:</label>
+          <select onchange="changeLanguage(this.value)" class="w-full bg-slate-800 border border-slate-600 rounded-lg p-2 text-slate-200">
+            <option value="ko">한국어 (Korean)</option>
+            <option value="en" selected>English</option>
+            <option value="ja">日本語 (Japanese)</option>
+            <option value="zh-CN">简体中文 (Chn Simpl)</option>
+            <option value="zh-TW">繁體中文 (Chn Tradi)</option>
+            <option value="fr">Français (French)</option>
+            <option value="de">Deutsch (German)</option>
+          </select>
+        </div>
+
+        <p class="text-slate-400" data-i18n="modal_consent_intro">
+          To provide real-time local sports team matching, ranking computation, and interactive partner discovery, please review and confirm the terms below:
+        </p>
+
+        <div class="space-y-2 bg-slate-900/60 p-3 rounded-xl border border-slate-700">
+          <label class="flex items-start gap-2 cursor-pointer">
+            <input type="checkbox" id="consentTerms" checked class="mt-0.5 rounded text-orange-500 focus:ring-0">
+            <span data-i18n="consent_terms">[Required] Agree to Service Terms & Global Information Security Policy (GDPR/PIPA)</span>
+          </label>
+          <label class="flex items-start gap-2 cursor-pointer">
+            <input type="checkbox" id="consentLocation" checked class="mt-0.5 rounded text-orange-500 focus:ring-0">
+            <span data-i18n="consent_loc">[Required] Agree to GPS location sharing for Discover Live Map & Real-time Partner Finding</span>
+          </label>
+          <label class="flex items-start gap-2 cursor-pointer">
+            <input type="checkbox" id="consentChallenge" checked class="mt-0.5 rounded text-orange-500 focus:ring-0">
+            <span data-i18n="consent_match">[Required] Agree to Mutual Verification & Consent system for Recording Match Scores</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-3 pt-2">
+        <button onclick="confirmUserConsent()" class="w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold py-2.5 px-4 rounded-xl text-xs shadow-lg transition">
+          <span data-i18n="btn_agree_continue">Confirm and Enter App (동의하고 시작하기)</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: AI MATCHING SUGGESTION MODAL -->
+  <div id="aiMatchModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-800 border border-slate-700 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-700">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-orange-500/20 text-orange-400 flex items-center justify-center">
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
+          </div>
+          <h3 class="font-bold text-white text-base" id="aiModalTitle">AI Match Suggestion</h3>
+        </div>
+        <button onclick="closeModal('aiMatchModal')" class="text-slate-400 hover:text-white">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div id="aiModalBody" class="space-y-3 text-xs">
+        <!-- Content inserted dynamically -->
+      </div>
+
+      <div class="pt-2 flex justify-end">
+        <button onclick="closeModal('aiMatchModal')" class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-xl text-xs font-semibold">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: CREATE CHALLENGE -->
+  <div id="newChallengeModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-800 border border-slate-700 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-700">
+        <h3 class="font-bold text-white text-base flex items-center gap-2">
+          <i class="fa-solid fa-fire text-orange-500"></i>
+          <span data-i18n="modal_new_challenge">Create Official Challenge</span>
+        </h3>
+        <button onclick="closeModal('newChallengeModal')" class="text-slate-400 hover:text-white">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <form id="challengeForm" onsubmit="submitChallengeForm(event)" class="space-y-3 text-xs">
+        <div>
+          <label class="block text-slate-300 font-medium mb-1" data-i18n="challenge_type">Challenge Type:</label>
+          <select id="formChallengeType" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-200">
+            <option value="individual">Individual Challenge (Target 2~3 Ranks Above)</option>
+            <option value="club">Club-to-Club Match</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-slate-300 font-medium mb-1" data-i18n="form_sport">Sport Category (Must match opponent):</label>
+          <select id="formChallengeSport" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-200">
+            <option value="클라이밍">Climbing (클라이밍)</option>
+            <option value="프리다이빙">Freediving (프리다이빙)</option>
+            <option value="배드민턴">Badminton (배드민턴)</option>
+            <option value="테니스">Tennis (테니스)</option>
+            <option value="수중하키">Underwater Hockey (수중하키)</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-slate-300 font-medium mb-1" data-i18n="form_target">Opponent / Target:</label>
+          <input type="text" id="formChallengeTarget" required placeholder="Player Name or Club Name" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-200">
+        </div>
+
+        <div>
+          <label class="block text-slate-300 font-medium mb-1" data-i18n="form_date_loc">Date & Venue:</label>
+          <input type="text" id="formChallengeVenue" required placeholder="e.g. 2026-09-30 @ The Climb Mapo" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-200">
+        </div>
+
+        <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-700 text-slate-400">
+          <p class="flex items-center gap-1.5 text-orange-400 font-semibold mb-1">
+            <i class="fa-solid fa-triangle-exclamation"></i> Rank Rule Notice
+          </p>
+          <span data-i18n="form_rule_notice">Only challenges against 2~3 ranks above are permitted for official rating adjustment. Both sides must agree before result is saved to Google Sheet database.</span>
+        </div>
+
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" onclick="closeModal('newChallengeModal')" class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-xl">
+            Cancel
+          </button>
+          <button type="submit" class="bg-orange-500 hover:bg-orange-600 text-white font-semibold px-4 py-2 rounded-xl">
+            Send Challenge
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: PAYMENT CHECKOUT -->
+  <div id="paymentModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-800 border border-slate-700 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-700">
+        <h3 class="font-bold text-white text-base flex items-center gap-2">
+          <i class="fa-solid fa-credit-card text-purple-400"></i>
+          <span data-i18n="checkout_title">Secure Payment Checkout</span>
+        </h3>
+        <button onclick="closeModal('paymentModal')" class="text-slate-400 hover:text-white">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <div class="bg-slate-900 p-3.5 rounded-xl border border-slate-700">
+          <div class="text-slate-400 text-[11px]" id="checkoutCategory">Club Dues</div>
+          <div class="font-bold text-white text-sm" id="checkoutItemName">The Climb Boulders Monthly Dues</div>
+          <div class="text-emerald-400 font-bold text-base mt-2" id="checkoutAmount">₩ 20,000</div>
+        </div>
+
+        <div>
+          <label class="block text-slate-300 font-medium mb-1.5" data-i18n="choose_payment_method">Select Payment Method:</label>
+          <div class="grid grid-cols-2 gap-2">
+            <button type="button" onclick="selectPayMethod('kakaopay')" class="pay-method-btn p-2.5 rounded-xl border border-yellow-500/50 bg-yellow-500/10 text-yellow-300 font-medium text-center">
+              KakaoPay
+            </button>
+            <button type="button" onclick="selectPayMethod('applepay')" class="pay-method-btn p-2.5 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 font-medium text-center">
+              Apple Pay
+            </button>
+            <button type="button" onclick="selectPayMethod('card')" class="pay-method-btn p-2.5 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 font-medium text-center">
+              Credit Card
+            </button>
+            <button type="button" onclick="selectPayMethod('paypal')" class="pay-method-btn p-2.5 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 font-medium text-center">
+              PayPal / Stripe
+            </button>
+          </div>
+        </div>
+
+        <div class="text-[11px] text-slate-400 flex items-center gap-1.5 pt-2">
+          <i class="fa-solid fa-lock text-emerald-400"></i>
+          <span>256-bit SSL encrypted. Payment guaranteed under escrow policy.</span>
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-2 pt-2">
+        <button type="button" onclick="closeModal('paymentModal')" class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-xl text-xs">
+          Cancel
+        </button>
+        <button type="button" onclick="executePayment()" class="bg-purple-600 hover:bg-purple-500 text-white font-semibold px-5 py-2 rounded-xl text-xs">
+          Complete Payment
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification Toast -->
+  <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-slate-800 border border-slate-700 text-white px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-3 text-xs">
+    <i id="toastIcon" class="fa-solid fa-circle-check text-emerald-400 text-base"></i>
+    <span id="toastMsg">Action completed successfully!</span>
+  </div>
+
+  <!-- Main JavaScript Application Logic -->
+  <script src="app.js"></script>
+  <!-- PWA Service Worker Registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => console.log('PWA ServiceWorker registered successfully:', reg.scope))
+          .catch(err => console.log('ServiceWorker registration failed:', err));
+      });
+    }
+  </script>
+</body>
+</html>

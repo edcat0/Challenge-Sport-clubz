@@ -1,0 +1,42 @@
+{
+  "name": "Challenge - Sports clubz",
+  "short_name": "Sport Clubz",
+  "description": "Sport community app for all sports for everyone. Real-time discover, challenge ladder, club sessions calendar, and payments.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "orientation": "portrait-primary",
+  "lang": "en",
+  "icons": [
+    {
+      "src": "icons/icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": [
+    "sports",
+    "social",
+    "fitness"
+  ],
+  "shortcuts": [
+    {
+      "name": "Discover Map",
+      "url": "./index.html#discover",
+      "description": "Find nearby sports clubs and live partners"
+    },
+    {
+      "name": "Challenge Ladder",
+      "url": "./index.html#challenges",
+      "description": "Challenge opponents 2-3 ranks above"
+    },
+    {
+      "name": "Club Sessions",
+      "url": "./index.html#calendar",
+      "description": "View nearest scheduled training sessions"
+    }
+  ]
+}

@@ -1,0 +1,66 @@
+{
+  "version": "1.0.0",
+  "spreadsheet_id": "13rrInmHDEEx0vfDC2w8ghNF7DfIRdDtaebz0GxEJb3I",
+  "sheets": {
+    "Users": {
+      "fields": [
+        "Unique User code",
+        "이름 (Name)",
+        "지역 (Region)",
+        "관심 종목 1~6",
+        "경기 수 (Matches)",
+        "누적 점수 (Score)",
+        "현재 레벨 (Level)",
+        "사진 (Photo)",
+        "핸드폰번호"
+      ]
+    },
+    "Clubz": {
+      "fields": [
+        "Unique Club code",
+        "클럽명 (Club)*",
+        "국가",
+        "도시",
+        "지역 (Region)*",
+        "종목 1 (Sport)",
+        "종목 2 (Sport)",
+        "가입 조건 (Req Level)",
+        "클럽 소개 (Description)",
+        "모임일정",
+        "가입 문의 (Contact)",
+        "주소: 활동장소",
+        "Geocode - Lat",
+        "Geocode - Long"
+      ]
+    },
+    "Record": {
+      "fields": [
+        "Record code",
+        "날짜 (Date)*",
+        "경기명",
+        "경기장",
+        "클럽명",
+        "유저명",
+        "종목 (Sport)",
+        "Won player",
+        "Lost player",
+        "Any other teams",
+        "Score Result",
+        "경기 결과",
+        "획득 점수",
+        "양측동의 (Consent)"
+      ]
+    },
+    "Rankings": {
+      "fields": [
+        "Rank",
+        "Name/Club",
+        "Entity Type",
+        "Sport",
+        "Region",
+        "Score",
+        "Tier"
+      ]
+    }
+  }
+}
